@@ -3,7 +3,11 @@ Quick Ocean Carbon Cycle Model
 
 # Installation
 
-```pip install qoccm```
+Via pip:
+
+```
+pip install qoccm
+```
 
 or if you want to try out the examples:
 
