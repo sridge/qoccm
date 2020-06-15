@@ -29,9 +29,7 @@ Contents
 .. toctree::
    methodology
    examples
-   
-.. automodule:: qoccm
-   :members:
+   qoccm
 
 Contribute
 ----------

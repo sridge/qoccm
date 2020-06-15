@@ -1,10 +1,5 @@
-qoccm package
-=============
-
-Module contents
----------------
+qoccm
+=====
 
 .. automodule:: qoccm
    :members:
-   :undoc-members:
-   :show-inheritance:
