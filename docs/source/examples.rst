@@ -16,6 +16,11 @@ The first step is to specify the model timestep and ocean mixed layer depth. For
 
 .. code-block:: python
 
+	import qoccm
+	import xarray as xr
+	import numpy as np
+	
+
 	OceanMLDepth = 109 # this gives the best fit to the CESM
 
 	year_i = 1850.5
@@ -30,7 +35,7 @@ Next load in the forcings: global mean sea surface temperature anomaly (:math:`K
 
 .. code-block:: python
 
-	atm_co2 = xr.open_dataset(f'ATM_CO2.nc')
+	atmos_co2 = xr.open_dataarray(f'ATM_CO2.nc')
 	DT = xr.open_dataarray('GMSSTA.nc')
 
 :code:`DT` is this example is diagnosed from the ocean component model of the CESM-LENS (Kay et al. 2015).
@@ -39,8 +44,8 @@ In this next step, we interpolate the forcings to the points in time for the giv
 
 .. code-block:: python
 
-	atm_co2 = atm_co2.interp(year=np.linspace(year_i,year_f,nsteps)
-	DT = DT.interp(year=np.linspace(year_i,year_f,nsteps)
+	atmos_co2 = atmos_co2.interp(year=np.linspace(year_i,year_f,nsteps))
+	DT = DT.interp(year=np.linspace(year_i,year_f,nsteps))
 
 Plot the results:
 
@@ -49,41 +54,43 @@ Plot the results:
 	plt.figure(dpi=300)
 
 	# linear buffering and constant solubility
-	ds = ocean_flux(atmos_co2,
-	                OceanMLDepth=OceanMLDepth, HILDA=True,
-	                DT=None,
-	                temperature='constant', chemistry='constant',
-	               )
+	ds = qoccm.ocean_flux(atmos_co2,
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=None,
+	                      temperature='constant', chemistry='constant',
+	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,linestyle='--',label = 'Fixed Temperature and PI Buffer Factor')
+	plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature and PI Buffer Factor')
 
 	# linear buffering
-	ds = ocean_flux(atmos_co2,
-	                OceanMLDepth=OceanMLDepth, HILDA=True,
-	                DT=DT,
-	                temperature='variable', chemistry='constant',
-	               )
+	ds = qoccm.ocean_flux(atmos_co2,
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=DT,
+	                      temperature='variable', chemistry='constant',
+	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label='Only Warming')
+	plt.plot(atmos_co2.year,flux,label='Constant PI Buffer Capacity')
 
 	# constant solubility
-	ds = ocean_flux(atmos_co2,
-	                OceanMLDepth=OceanMLDepth, HILDA=True,
-	                DT=None,
-	                temperature='constant', chemistry='variable',
-	               )
+	ds = qoccm.ocean_flux(atmos_co2,
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=None,
+	                      temperature='constant', chemistry='variable',
+	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label = 'Only PI Buffer Factor',color='tab:green')
+	plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature',color='tab:green')
 
 	# control
-	ds = ocean_flux(atmos_co2,
-	                OceanMLDepth=OceanMLDepth, HILDA=True,
-	                DT=DT,
-	                temperature='variable', chemistry='variable',
-	               )
+	ds = qoccm.ocean_flux(atmos_co2,
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=DT,
+	                      temperature='variable', chemistry='variable',
+	                     )
 	flux = ds.F_as
 	plt.plot(atmos_co2.year,flux,label='Control',color='k')
 
+	plt.grid()
+	plt.xlim(1850.5,2080)
 	plt.legend()
 
 

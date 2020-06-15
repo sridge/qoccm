@@ -328,7 +328,7 @@ def ocean_flux(atmos_co2,
     Returns
     -------
     ds: `xarray.Dataset`
-        This Dataset contains time (year), ocean flux ((Pg C)/year), surface ocean anthropogenic
+        This Dataset contains time (year), ocean flux ((Pg C)/timestep), surface ocean anthropogenic
         carbon (umol/kg), surface ocean perturbation pCO2 (ppm)
     """
     
@@ -385,12 +385,18 @@ def ocean_flux(atmos_co2,
             
     if (temperature == 'variable'):
         dpco2_oc = pco2_oc - pco2_oc_pi
-    
+        
     ds = xr.Dataset(data_vars={'F_as':('year',air_sea_flux),
                                'dDIC':('year',surface_ocean_ddic),
                                'dpCO2':('year',dpco2_oc)
                                },
-                coords={'year':atmos_co2.year})  
+                coords={'year':atmos_co2.year}) 
+
+    # annually average/sum output
+    ds['year'] = ds.year.astype(int)
+    ds['F_as'] = ds.F_as.groupby('year').sum(dim='year')
+    ds['dDIC'] = ds.dDIC.groupby('year').mean(dim='year')
+    ds['dpCO2'] = ds.dpCO2.groupby('year').mean(dim='year')
 
     return ds
 
@@ -403,44 +409,45 @@ def plot_experiments(atmos_co2, DT, OceanMLDepth=109):
     plt.figure(dpi=300)
 
     # linear buffering and constant solubility
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=None,
-                    temperature='constant', chemistry='constant',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=None,
+                          temperature='constant', chemistry='constant',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'Fixed Temperature and PI Buffer Factor')
+    plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature and PI Buffer Factor')
 
     # linear buffering
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=DT,
-                    temperature='variable', chemistry='constant',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=DT,
+                          temperature='variable', chemistry='constant',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label='Only Warming')
+    plt.plot(atmos_co2.year,flux,label='Constant PI Buffer Capacity')
 
     # constant solubility
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=None,
-                    temperature='constant', chemistry='variable',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=None,
+                          temperature='constant', chemistry='variable',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label = 'Only PI Buffer Factor',color='tab:green')
+    plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature',color='tab:green')
 
     # control
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=DT,
-                    temperature='variable', chemistry='variable',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=DT,
+                          temperature='variable', chemistry='variable',
+                         )
     flux = ds.F_as
     plt.plot(atmos_co2.year,flux,label='Control',color='k')
 
+    plt.grid()
+    plt.xlim(1850.5,2080)
     plt.legend()
-    
-    plt.legend()
+
     ax = plt.gca()
     
     return(ax)
