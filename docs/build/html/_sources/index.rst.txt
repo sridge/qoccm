@@ -30,6 +30,7 @@ Contents
    methodology
    examples
    qoccm
+   modules
 
 Contribute
 ----------
