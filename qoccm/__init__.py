@@ -394,276 +394,53 @@ def ocean_flux(atmos_co2,
 
     return ds
 
-#--------------------------
-# These functions run multiple experiments and plot the results
-#--------------------------
+def plot_experiments(atmos_co2, DT, OceanMLDepth=109):
 
-def plot_scen_flux(atmos_co2, DT, OceanMLDepth=109):
+    """
+    Run multiple experiments and plot the results. Same as the example on readthedocs
+    """
 
     plt.figure(dpi=300)
+
+    # linear buffering and constant solubility
+    ds = ocean_flux(atmos_co2,
+                    OceanMLDepth=OceanMLDepth, HILDA=True,
+                    DT=None,
+                    temperature='constant', chemistry='constant',
+                   )
+    flux = ds.F_as
+    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'Fixed Temperature and PI Buffer Factor')
 
     # linear buffering
     ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='constant',
-                  )
+                    OceanMLDepth=OceanMLDepth, HILDA=True,
+                    DT=DT,
+                    temperature='variable', chemistry='constant',
+                   )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'PI Buffer Factor')
+    plt.plot(atmos_co2.year,flux,label='Only Warming')
 
-    # solubility
-
+    # constant solubility
     ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='constant',
-                  )
+                    OceanMLDepth=OceanMLDepth, HILDA=True,
+                    DT=None,
+                    temperature='constant', chemistry='variable',
+                   )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label='PI Buffer Factor + Warming')
+    plt.plot(atmos_co2.year,flux,label = 'Only PI Buffer Factor',color='tab:green')
 
-    # non-linear buffering
-
+    # control
     ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='variable',
-                  )
+                    OceanMLDepth=OceanMLDepth, HILDA=True,
+                    DT=DT,
+                    temperature='variable', chemistry='variable',
+                   )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label = 'Buffer Factor',color='tab:green')
-
-    # buffering + solubility
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='variable',
-                  )
-    flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label='Buffer Factor + Warming',color='k')
-
-    # constant growth
-
-    f_ref = 1.743187
-    f_exp = f_ref*(atmos_co2-278)/(atmos_co2.sel(year=1990)-278)
-    plt.plot(atmos_co2.year,f_exp.values,color='c',label='α(t)')
-
-
-    plt.xlim(1920,2079)
+    plt.plot(atmos_co2.year,flux,label='Control',color='k')
 
     plt.legend()
-
-    plt.xlim(1920,2078)
-    plt.ylim(0,13)
-    ax = plt.gca()
-    
-    return(ax)
-
-def plot_scen_cum(atmos_co2, DT, OceanMLDepth=110):
-
-    plt.figure(dpi=300)
-
-    # linear buffering
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='constant',
-                  )
-    flux = ds.F_as.cumsum(dim='year')
-    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'PI Buffer Factor')
-
-    # solubility
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='constant',
-                  )
-    flux = ds.F_as.cumsum(dim='year')
-    plt.plot(atmos_co2.year,flux,label='PI Buffer Factor + Warming')
-
-    # non-linear buffering
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='variable',
-                  )
-    flux = ds.F_as.cumsum(dim='year')
-    plt.plot(atmos_co2.year,flux,label = 'Buffer Factor',color='tab:green')
-
-    # buffering + solubility
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='variable',
-                  )
-    flux = ds.F_as.cumsum(dim='year')
-    plt.plot(atmos_co2.year,flux,label='Buffer Factor + Warming',color='k')
-
-    # constant growth
-
-    f_ref = 1.743187
-    f_exp = f_ref*(atmos_co2-278)/(atmos_co2.sel(year=1990)-278)
-    f_exp = np.cumsum(f_exp)
-    plt.plot(atmos_co2.year,f_exp.values,color='c',label='α(t)')
-
-
-    plt.xlim(1920,2079)
-    plt.ylim(0,600)
     
     plt.legend()
-    ax = plt.gca()
-    
-    return(ax)
-    
-def plot_scen_ddic(atmos_co2, DT,OceanMLDepth=110):
-
-    plt.figure(dpi=300)
-
-    # linear buffering
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='constant',
-                  )
-    flux = ds.dDIC
-    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'PI Buffer Factor')
-
-    # solubility
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='constant',
-                  )
-    flux = ds.dDIC
-    plt.plot(atmos_co2.year,flux,label='PI Buffer Factor + Warming')
-
-    # non-linear buffering
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=None,
-                   temperature='constant', chemistry='variable',
-                  )
-    flux = ds.dDIC
-    plt.plot(atmos_co2.year,flux,label = 'Buffer Factor',color='tab:green')
-
-    # buffering + solubility
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='variable',
-                  )
-    flux = ds.dDIC
-    plt.plot(atmos_co2.year,flux,label='Buffer Factor + Warming',color='k')
-
-    # constant growth
-    f_exp = ds.dDIC.sel(year=1990)*(atmos_co2-278)/(atmos_co2.sel(year=1990)-278)
-    plt.plot(atmos_co2.year,f_exp.values,color='c',label='Historical Scaling')
-
-
-    plt.xlim(1920,2079)
-    plt.ylim(0,300)
-    
-    plt.legend()
-    ax = plt.gca()
-    
-    return(ax)
-    
-def plot_scen_cum_b(atmos_co2, DT, OceanMLDepth=110):
-
-    plt.figure(dpi=300)
-
-    # variable temperature, constant chemistry
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='constant',
-                  )
-    
-    exper_TV_CC = np.cumsum(ds.F_as)
-    
-
-    # buffering + solubility
-
-    ds = ocean_flux(atmos_co2,
-                   OceanMLDepth=OceanMLDepth, HILDA=True,
-                   DT=DT,
-                   temperature='variable', chemistry='variable',
-                  )
-    exper_TV_CV = np.cumsum(ds.F_as)
-    
-
-    # constant growth
-
-    f_ref = 1.743187
-    f_exp = np.cumsum(f_ref*(atmos_co2-278)/(atmos_co2.sel(year=1990)-278))
-    
-    # plotting
-    plt.fill_between(atmos_co2.year.sel(year=slice(1850,2005)),
-                     exper_TV_CC.sel(year=slice(1850,2005)),
-                     exper_TV_CV.sel(year=slice(1850,2005)),
-                     color=(91/255,174/255,178/255),label='$\Delta C_{R}$')
-    
-    plt.fill_between(atmos_co2.year.sel(year=slice(1850,2005)),
-                     f_exp.sel(year=slice(1850,2005)),
-                     exper_TV_CC.sel(year=slice(1850,2005)),
-                     color=(223/255,237/255,195/255),
-                     label='$\Delta C_{dyn}$')
-    
-    plt.plot(atmos_co2.year.sel(year=slice(1850,2005)),
-             f_exp.sel(year=slice(1850,2005)).values,color='c',
-             linewidth=1,label='Historical Scaling')
-    
-    plt.plot(atmos_co2.sel(year=slice(1850,2005)).year,
-             exper_TV_CC.sel(year=slice(1850,2005)).values,
-             color='tab:blue',
-             linewidth=1,label='PI Buffer Factor + Warming')
-    
-    plt.plot(atmos_co2.sel(year=slice(1850,2005)).year,
-             exper_TV_CV.sel(year=slice(1850,2005)).values,
-             color='k',linewidth=1,label='Sum of All Effects')
-    
-    plt.fill_between(atmos_co2.year.sel(year=slice(2006,2079)),
-                     exper_TV_CC.sel(year=slice(2006,2079)),
-                     exper_TV_CV.sel(year=slice(2006,2079)),color=(91/255,174/255,178/255),
-                     label=None)
-    
-    plt.fill_between(atmos_co2.year.sel(year=slice(2006,2079)),
-                     f_exp.sel(year=slice(2006,2079)),
-                     exper_TV_CC.sel(year=slice(2006,2079)),
-                     color=(223/255,237/255,195/255),
-                     label=None)
-    
-    plt.plot(atmos_co2.year.sel(year=slice(2006,2079)),
-             f_exp.sel(year=slice(2006,2079)).values,
-             color='c',linewidth=1,label=None)
-    
-    plt.plot(atmos_co2.sel(year=slice(2006,2079)).year,
-             exper_TV_CC.sel(year=slice(2006,2079)).values,
-             color='tab:blue',linewidth=1,
-             label=None)
-    
-    plt.plot(atmos_co2.sel(year=slice(2006,2079)).year,
-             exper_TV_CV.sel(year=slice(2006,2079)).values,color='k',
-             linewidth=1,
-             label=None)
-    
-    tem = f_exp.sel(year=slice(1850,2080))-exper_TV_CC.sel(year=slice(1850,2080))
-    print('$\Delta C_{dyn}$='+f'{int(np.round(tem.sel(year=2079).values))} PgC')
-
-    tem = exper_TV_CC.sel(year=slice(1850,2080))-exper_TV_CV.sel(year=slice(1850,2080))
-    print('$\Delta C_{R}$='+f'{int(np.round(tem.sel(year=2079).values))} PgC')
-    
-    tem = exper_TV_CV.sel(year=slice(1850,2080))
-    print('$\Delta C$='+f'{int(np.round(tem.sel(year=2079).values))} PgC')
-
-    plt.xlim(1920,2080)
-
-    plt.legend()
-
-    plt.ylim(0,600)
     ax = plt.gca()
     
     return(ax)
