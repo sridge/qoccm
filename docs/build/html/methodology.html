@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Methodology &#8212; QOCCM 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Examples" href="examples.html" />
+    <link rel="prev" title="QOCCM" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="methodology">
+<h1>Methodology<a class="headerlink" href="#methodology" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="model-dynamics">
+<h2>Model Dynamics<a class="headerlink" href="#model-dynamics" title="Permalink to this headline">¶</a></h2>
+<p>QOCCM is in the same class of models that generate the CO2 concentration scenarios that are used to force the Earth System Models of CMIP6. For a detailed description of the model see Ridge and McKinley (2020). The model consists of two equations that are solved at each timestep:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}C_{ant}(t) &amp;= \frac{1}{h}\int_{t_i}^{t}F_{ant}(u)r(t-u)du\\
+F_{ant} &amp;= c k_g(pCO_{2}^{atm}-pCO_{2}^{ocn})\end{split}\]</div>
+<p>The mixed layer concentration of anthropogenic carbon, <span class="math notranslate nohighlight">\(C_{ant}(t)\)</span>, is calculated as the convultion integral of the air-sea <span class="math notranslate nohighlight">\(C_{ant}\)</span> flux, <span class="math notranslate nohighlight">\(F_{ant}(t)\)</span>, and mixed layer impulse response function, <span class="math notranslate nohighlight">\(r(t)\)</span>. The mixed layer impulse response function characterizes the time that a unit pulse would take to leave the surface ocean mixed layer, and can be calculated for any ocean carbon cycle model. Included in this package is <cite>r(t)</cite> for two models, the HILDA model (a box diffusion model) and a three-dimensional Ocean General Ciculation Model (OGCM; Sarmiento et al., 1992).</p>
+<p>Effective ocean mixed layer depth, the depth of the ocean that actually exchanges with the atmosphere, is <span class="math notranslate nohighlight">\(h\)</span>. This is used as a tuning parameter when fitting QOCCM to Earth System Models. The air-sea flux is calculated as the difference between surface ocean partial pressure of CO2 (<span class="math notranslate nohighlight">\(pCO_{2}^{ocn}\)</span>) and atmosphere CO2 (<span class="math notranslate nohighlight">\(pCO_{2}^{atm}\)</span>), times a gas exchange coefficient, <span class="math notranslate nohighlight">\(k_g\)</span> (<span class="math notranslate nohighlight">\(m^{-2}~year^{-1}\)</span>). A conversion factor, c, converts the flux from <span class="math notranslate nohighlight">\(ppm~m^{-2}~year^{-1}\)</span> into units of <span class="math notranslate nohighlight">\(\mu mol~kg^{-1} m^{-2}~year^{-1}\)</span>.</p>
+<p>To build an intuition for the first equation, imagine each year’s air-sea <span class="math notranslate nohighlight">\(C_{ant}\)</span> flux as an injection of carbon into the ocean, that sticks around in the ocean mixed layer for an amount of time specified by <span class="math notranslate nohighlight">\(r(t)\)</span>. In this form, ocean circulation is fixed and represented by <span class="math notranslate nohighlight">\(r(t)\)</span>. Given the rapid rate of <span class="math notranslate nohighlight">\(pCO_{2}^{atm}\)</span> increase, the injected carbon accumulates because <span class="math notranslate nohighlight">\(r(t)\)</span> dictates that removal from the mixed layer is slow relative to <span class="math notranslate nohighlight">\(pCO_{2}^{atm}\)</span> increase. Representing ocean carbon uptake in impulse response function form is equivalent to considering the ocean as a one-dimensional diffusive column:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}    \frac{\partial C_{ant}}{\partial t} &amp;= \frac{F_{ant}}{h}
+     + \frac{k_{z,eff}}{h}\frac{\partial C_{ant}}{\partial z} \\
+C_{ant}(t) &amp;= \frac{1}{h}\int_{0}^{t} F_{ant}
++ k_{z,eff}\frac{\partial C_{ant}}{\partial z} dt\end{split}\]</div>
+<p>Where <span class="math notranslate nohighlight">\(k_{z,eff}\)</span> is the effective vertical surface ocean diffusivity. The effective vertical diffusivity represents the various processes that remove carbon from the surface (eddy-induced isopycnal diffusion, diapycnal diffusion, etc) as a single diffusive process. Because circulation is fixed, the time evolution of the vertical gradient at the base of the surface ocean mixed layer (<span class="math notranslate nohighlight">\(\frac{\partial C_{ant}}{\partial z}\)</span>) dictates the time evolution of the magnitude of the diffusive flux.</p>
+</div>
+<div class="section" id="model-chemistry">
+<h2>Model Chemistry<a class="headerlink" href="#model-chemistry" title="Permalink to this headline">¶</a></h2>
+<p>We calculate <span class="math notranslate nohighlight">\(pCO_{2}^{ocn}\)</span> as follows:</p>
+<div class="math notranslate nohighlight">
+\[pCO_{2}^{ocn}=[pCO_{2}^{ocn,PI}+\delta pCO_{2}^{ocn}(C_{ant},T_0)]exp(\alpha_T\delta T)\]</div>
+<p>This is the preindustrial <span class="math notranslate nohighlight">\(pCO_{2}^{ocn}\)</span> (<span class="math notranslate nohighlight">\(pCO_{2}^{ocn,PI}\)</span>; fixed at 280 ppm) plus the athopogenic perturbation to  <span class="math notranslate nohighlight">\(pCO_{2}^{ocn}\)</span> (<span class="math notranslate nohighlight">\(\delta pCO_{2}^{ocn}(C_{ant},T_0)\)</span>). The warming response is parameterized as an exponential function as in Takahashi et al. (1993), with <span class="math notranslate nohighlight">\(\alpha_T\)</span> set to 0.0423 (Equation A24; Joos et al., 2001)). The <span class="math notranslate nohighlight">\(\delta pCO_{2}^{ocn}\)</span> is calculated using a fixed ocean alkalinity of 2300 <span class="math notranslate nohighlight">\(\mu mol~kg^{-1}\)</span> and the preindustrial temperature, <span class="math notranslate nohighlight">\(T_0\)</span>. The chemistry of <span class="math notranslate nohighlight">\(\delta pCO_{2}^{ocn}\)</span> is parameterized as follows:</p>
+<div class="math notranslate nohighlight">
+\[\delta pCO_{2}^{ocn}(C_{ant},T_0) =  C_{ant}[A1 + C_{ant}(A2 + C_{ant}(A3 + C_{ant}(A4 +  C_{ant}A5)))]\]</div>
+<p>With coefficients:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}A1 &amp;= (1.5568 - 1.3993\times10^{-2}\times T_0) \\
+A2 &amp;= (7.4706 - 0.20207\times T_0)\times10^{-3} \\
+A3 &amp;= -(1.2748 - 0.12015\times T_0)\times10^{-5} \\
+A4 &amp;= (2.4491 - 0.12639\times T_0)\times10^{-7} \\
+A5 &amp;= -(1.5468 - 0.15326\times T_0)\times10^{-10}\end{split}\]</div>
+<p>From Joos et al. (1996).</p>
+</div>
+<div class="section" id="idealized-experiments">
+<h2>Idealized Experiments<a class="headerlink" href="#idealized-experiments" title="Permalink to this headline">¶</a></h2>
+<p>The QOCCM package includes the capability to run idealized simulations of future ocean carbon uptake, as in Ridge and McKinley (2020). Two types of idealizations, constant chemical capacity, and constant temperature, are included in the QOCCM package:</p>
+<div class="section" id="constant-chemical-capacity">
+<h3>Constant Chemical Capacity<a class="headerlink" href="#constant-chemical-capacity" title="Permalink to this headline">¶</a></h3>
+<p>The ocean has a large chemical capacity for CO2, which is referred to as buffer capacity. When CO2 dissolves in seawater it participates in chemical reactions that effectively hide the CO2 in chemical species that do not exchange with the atmosphere (Sarmiento and Gruber 2006; Figure 1).</p>
+<div class="figure align-default" id="id1">
+<a class="reference internal image-reference" href="_images/reactions.png"><img alt="chemical reactions" src="_images/reactions.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><strong>Figure 1</strong>: Chemical reactions once CO2 enters seawater</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+<p>The capacity to hide CO2 in chemical species other than CO2 is buffer capacity. The additon of carbon to the surface ocean reduces buffer capcity by altering the chemistry. Ultimately less CO2 is hidden, and thus <span class="math notranslate nohighlight">\(\delta_t pCO_{2}^{ocn}\)</span> increases more for the same perturbation to Dissolved Inorganic Carbon (<span class="math notranslate nohighlight">\(\delta_t DIC = C_{ant}\)</span>) (Figure 2).</p>
+<div class="figure align-default" id="id2">
+<a class="reference internal image-reference" href="_images/buffer.png"><img alt="effect of variable buffer capacity" src="_images/buffer.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><strong>Figure 2</strong>: The vertical gray lines are mixed layer <span class="math notranslate nohighlight">\(\delta_t DIC\)</span> concentrations in 1990 and 2040 in the RCP8.5 scenario. The loss of buffer capacity results in <span class="math notranslate nohighlight">\(\delta_t pCO_{2}^{ocn}\)</span> being 40 ppm higher in 2040.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+<p>Buffer capacity can be fixed to preindustrial values in QOCCM by setting the chemistry flag to “constant”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># linear buffering</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="constant-temperature">
+<h3>Constant Temperature<a class="headerlink" href="#constant-temperature" title="Permalink to this headline">¶</a></h3>
+<p>Gases are more soluable at colder temperatures, thus as the ocean surface warms, less CO2 will be able to dissolve in the ocean surface (Figure 3). This is the dominant impact of warming associated with unmitigated climate change prior to 2080 (Ridge and McKinley 2020). Beyond 2080, effects of changing ocean circulation start to grow (Randerson et al., 2015; Ridge and McKinley 2020), which are not represented by QOCCM, so keep in mind that high warming simulations that use QOCCM beyond 2080 are missing a key mechanism of change.</p>
+<div class="figure align-default" id="id3">
+<a class="reference internal image-reference" href="_images/solubility.png"><img alt="effect of variable buffer capacity" src="_images/solubility.png" style="width: 400px;" /></a>
+<p class="caption"><span class="caption-text"><strong>Figure 3</strong>: Gas solubility for various gases, including CO2. Figure from Sarmiento and Gruber (2006).</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+<p>Solubility can be fixed to preindustrial values in QOCCM by setting the temperature flag to “constant”:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># constant temperature</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QOCCM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Methodology</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#model-dynamics">Model Dynamics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#model-chemistry">Model Chemistry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#idealized-experiments">Idealized Experiments</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#constant-chemical-capacity">Constant Chemical Capacity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#constant-temperature">Constant Temperature</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qoccm.html">qoccm package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">QOCCM</a></li>
+      <li>Next: <a href="examples.html" title="next chapter">Examples</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sean Ridge.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/methodology.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

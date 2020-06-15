@@ -1,0 +1,183 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Examples &#8212; QOCCM 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="qoccm package" href="qoccm.html" />
+    <link rel="prev" title="Methodology" href="methodology.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Included with the <a class="reference external" href="https://github.com/sridge/qoccm">QOCCM GitHub repository</a> are some example files that will be used to run these QOCCM examples. You’ll need to download these files from the <a class="reference external" href="https://github.com/sridge/qoccm">QOCCM GitHub repository</a> if you installed QOCCM via pip.</p>
+<div class="section" id="simple-example-idealized-experiments">
+<h2>Simple Example: Idealized Experiments<a class="headerlink" href="#simple-example-idealized-experiments" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will show you how to generate idealized experiments. This example is forced with atmospheric CO2 consistent with an unmitigated climate change scenario (RCP8.5). By selecting a mixed layer depth of 109 meters, QOCCM in this example will match the carbon uptake of the Community Earth Sysetm Model (CESM) ocean component model.</p>
+<p>Start in the <code class="code docutils literal notranslate"><span class="pre">qoccm</span></code> directory you cloned from GitHub or copy the files <code class="code docutils literal notranslate"><span class="pre">ATM_CO2.nc</span></code> and <code class="code docutils literal notranslate"><span class="pre">GMSSTA.nc</span></code> from the <code class="code docutils literal notranslate"><span class="pre">qoccm</span></code> directory to you working directory.</p>
+<p>The first step is to specify the model timestep and ocean mixed layer depth. For the highest accuracy, we recommend a timestep of 0.1 years or less:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">OceanMLDepth</span> <span class="o">=</span> <span class="mi">109</span> <span class="c1"># this gives the best fit to the CESM</span>
+
+<span class="n">year_i</span> <span class="o">=</span> <span class="mf">1850.5</span>
+<span class="n">year_f</span> <span class="o">=</span> <span class="mf">2080.5</span>
+<span class="n">nsteps</span> <span class="o">=</span> <span class="mi">2300</span>
+
+<span class="n">time_step</span> <span class="o">=</span> <span class="p">(</span><span class="n">year_f</span><span class="o">-</span><span class="n">year_i</span><span class="p">)</span><span class="o">/</span><span class="n">nsteps</span>
+</pre></div>
+</div>
+<p>Note that <code class="code docutils literal notranslate"><span class="pre">year_i</span></code> must be the start of the industrial revolution, which is 1850 in this example. QOCCM is always intialized from a preindustrial state, because one of the basic assumptions of the model is that <span class="math notranslate nohighlight">\(C_{ant}(t_i) = 0\)</span>.</p>
+<p>Next load in the forcings: global mean sea surface temperature anomaly (<span class="math notranslate nohighlight">\(Kelvin\)</span>; <code class="code docutils literal notranslate"><span class="pre">DT</span></code>), and atmospheric CO2 (<span class="math notranslate nohighlight">\(ppm\)</span>; <code class="code docutils literal notranslate"><span class="pre">atm_co2</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">atm_co2</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ATM_CO2.nc&#39;</span><span class="p">)</span>
+<span class="n">DT</span> <span class="o">=</span> <span class="n">xr</span><span class="o">.</span><span class="n">open_dataarray</span><span class="p">(</span><span class="s1">&#39;GMSSTA.nc&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="code docutils literal notranslate"><span class="pre">DT</span></code> is this example is diagnosed from the ocean component model of the CESM-LENS (Kay et al. 2015).</p>
+<p>In this next step, we interpolate the forcings to the points in time for the given timestep. The forcings must have dimensions ‘year’, which QOCCM will use to infer the timestep.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">atm_co2</span> <span class="o">=</span> <span class="n">atm_co2</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">year_i</span><span class="p">,</span><span class="n">year_f</span><span class="p">,</span><span class="n">nsteps</span><span class="p">)</span>
+<span class="n">DT</span> <span class="o">=</span> <span class="n">DT</span><span class="o">.</span><span class="n">interp</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">year_i</span><span class="p">,</span><span class="n">year_f</span><span class="p">,</span><span class="n">nsteps</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Plot the results:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+
+<span class="c1"># linear buffering and constant solubility</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+<span class="n">flux</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">F_as</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">atmos_co2</span><span class="o">.</span><span class="n">year</span><span class="p">,</span><span class="n">flux</span><span class="p">,</span><span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Fixed Temperature and PI Buffer Factor&#39;</span><span class="p">)</span>
+
+<span class="c1"># linear buffering</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="n">DT</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+<span class="n">flux</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">F_as</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">atmos_co2</span><span class="o">.</span><span class="n">year</span><span class="p">,</span><span class="n">flux</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Only Warming&#39;</span><span class="p">)</span>
+
+<span class="c1"># constant solubility</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;constant&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+<span class="n">flux</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">F_as</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">atmos_co2</span><span class="o">.</span><span class="n">year</span><span class="p">,</span><span class="n">flux</span><span class="p">,</span><span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Only PI Buffer Factor&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;tab:green&#39;</span><span class="p">)</span>
+
+<span class="c1"># control</span>
+<span class="n">ds</span> <span class="o">=</span> <span class="n">ocean_flux</span><span class="p">(</span><span class="n">atmos_co2</span><span class="p">,</span>
+                <span class="n">OceanMLDepth</span><span class="o">=</span><span class="n">OceanMLDepth</span><span class="p">,</span> <span class="n">HILDA</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">DT</span><span class="o">=</span><span class="n">DT</span><span class="p">,</span>
+                <span class="n">temperature</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span> <span class="n">chemistry</span><span class="o">=</span><span class="s1">&#39;variable&#39;</span><span class="p">,</span>
+               <span class="p">)</span>
+<span class="n">flux</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">F_as</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">atmos_co2</span><span class="o">.</span><span class="n">year</span><span class="p">,</span><span class="n">flux</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;Control&#39;</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="s1">&#39;k&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QOCCM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="methodology.html">Methodology</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-example-idealized-experiments">Simple Example: Idealized Experiments</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="qoccm.html">qoccm package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="methodology.html" title="previous chapter">Methodology</a></li>
+      <li>Next: <a href="qoccm.html" title="next chapter">qoccm package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sean Ridge.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/examples.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

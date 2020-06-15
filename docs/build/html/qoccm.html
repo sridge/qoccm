@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>qoccm package &#8212; QOCCM 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Methodology" href="methodology.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="qoccm-package">
+<h1>qoccm package<a class="headerlink" href="#qoccm-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-qoccm">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-qoccm" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="qoccm.HILDA_response">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">HILDA_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.HILDA_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixed layer response function of the HILDA box-diffusion model
+(Shaffer and Sarmiento 1992, Sigenthaler and Joos 1996)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>years</strong> (<cite>numpy.array</cite> or <cite>xarray.DataArray</cite>) – Points in time to at which the user wants calculate ocean flux.</p></li>
+<li><p><strong>OceanMLDepth</strong> (<cite>int</cite> or <cite>float</cite>) – Ocean mixed layer depth, used as a tuning parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>return_val</strong> – An array of values of the response function at any point in time,
+times a conversion factor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>numpy.array</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.Sarmiento92_response">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">Sarmiento92_response</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.Sarmiento92_response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mixed layer response function (GFDL model, Sarmiento et al. 1992) as described in Joos et al., 1996.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>years</strong> (<cite>numpy.array</cite> or <cite>xarray.DataArray</cite>) – Points in time to at which the user wants calculate ocean flux.</p></li>
+<li><p><strong>OceanMLDepth</strong> (<cite>int</cite> or <cite>float</cite>) – Ocean mixed layer depth, used as a tuning parameter.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>return_val</strong> – An array of values of the response function at any point in time,
+times a conversion factor</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>numpy.array</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.delta_pco2_ocean">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">delta_pco2_ocean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_ocean_ddic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.delta_pco2_ocean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturbation pCO2 calculated from parameterized carbonate chemistry
+as described in Joos et al., 1996.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>return_val</strong> – perturbation pCO2 in units of ppm</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.delta_pco2_ocean_lin">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">delta_pco2_ocean_lin</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">surface_ocean_ddic</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.delta_pco2_ocean_lin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perturbation pCO2 based on constant buffer factor. The buffer factor is calculated
+as the slope of delta_pco2_ocean at an ocean perturbation pCO2 of 0.001 ppm and
+anthropogenic carbon concentration (dDIC) of 0.001</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>return_val</strong> – perturbation pCO2 in units of ppm</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.flux_TC_CC">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">flux_TC_CC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yr_ind</span></em>, <em class="sig-param"><span class="n">datmos_co2</span></em>, <em class="sig-param"><span class="n">air_sea_gas_exchange_coeff</span></em>, <em class="sig-param"><span class="n">surface_ocean_ddic</span></em>, <em class="sig-param"><span class="n">dpco2_oc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.flux_TC_CC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Air-sea flux at constant temperature and constant carbonate chemistry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yr_id</strong> (<cite>int</cite>) – Array index corresponding to the time value of the current timestep</p></li>
+<li><p><strong>datmos_co2</strong> (<cite>float</cite>) – Atmospheric perturbation pCO2 (ppm)</p></li>
+<li><p><strong>air_sea_gas_exchange_coeff</strong> (<cite>float</cite>) – Air-sea gas exchange coefficient (1/(m2 year))</p></li>
+<li><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p></li>
+<li><p><strong>dpco2_oc</strong> (<cite>numpy.array</cite>) – Ocean perturbation pCO2 (ppm)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>air-sea flux in units of (ppm)/(m2 year)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.flux_TC_CV">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">flux_TC_CV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yr_ind</span></em>, <em class="sig-param"><span class="n">datmos_co2</span></em>, <em class="sig-param"><span class="n">air_sea_gas_exchange_coeff</span></em>, <em class="sig-param"><span class="n">surface_ocean_ddic</span></em>, <em class="sig-param"><span class="n">dpco2_oc</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.flux_TC_CV" title="Permalink to this definition">¶</a></dt>
+<dd><p>air-sea flux at constant temperature but variable carbonate chemistry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yr_id</strong> (<cite>int</cite>) – Array index corresponding to the time value of the current timestep</p></li>
+<li><p><strong>datmos_co2</strong> (<cite>float</cite>) – Atmospheric perturbation pCO2 (ppm)</p></li>
+<li><p><strong>air_sea_gas_exchange_coeff</strong> (<cite>float</cite>) – Air-sea gas exchange coefficient (1/(m2 year))</p></li>
+<li><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p></li>
+<li><p><strong>dpco2_oc</strong> (<cite>numpy.array</cite>) – Ocean perturbation pCO2 (ppm)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>air-sea flux in units of (ppm)/(m2 year)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.flux_TV_CC">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">flux_TV_CC</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yr_ind</span></em>, <em class="sig-param"><span class="n">datmos_co2</span></em>, <em class="sig-param"><span class="n">air_sea_gas_exchange_coeff</span></em>, <em class="sig-param"><span class="n">surface_ocean_ddic</span></em>, <em class="sig-param"><span class="n">dpco2_oc</span></em>, <em class="sig-param"><span class="n">pco2_oc</span></em>, <em class="sig-param"><span class="n">pco2_oc_pi</span></em>, <em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.flux_TV_CC" title="Permalink to this definition">¶</a></dt>
+<dd><p>Air-sea flux at variable temperature but constant carbonate chemistry</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yr_id</strong> (<cite>int</cite>) – Array index corresponding to the time value of the current timestep</p></li>
+<li><p><strong>datmos_co2</strong> (<cite>float</cite>) – Atmospheric perturbation pCO2 (ppm)</p></li>
+<li><p><strong>air_sea_gas_exchange_coeff</strong> (<cite>float</cite>) – Air-sea gas exchange coefficient (1/(m2 year))</p></li>
+<li><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p></li>
+<li><p><strong>dpco2_oc</strong> (<cite>numpy.array</cite>) – Ocean perturbation pCO2 (ppm)</p></li>
+<li><p><strong>pco2_oc</strong> (<cite>numpy.array</cite>) – Ocean pCO2 (ppm)</p></li>
+<li><p><strong>pco2_oc_pi</strong> (<cite>int</cite> or <cite>float</cite>) – Preindustrial ocean pCO2 (ppm)</p></li>
+<li><p><strong>atmos_co2</strong> (<cite>numpy.array</cite>) – Atmopsheric pCO2 (ppm)</p></li>
+<li><p><strong>DT</strong> (<cite>numpy.array</cite> or <cite>xarray.DataArray</cite>) – Warming since preindustrail (degrees celsius)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>air-sea flux in units of (ppm)/(m2 year)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.flux_TV_CV">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">flux_TV_CV</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">yr_ind</span></em>, <em class="sig-param"><span class="n">datmos_co2</span></em>, <em class="sig-param"><span class="n">air_sea_gas_exchange_coeff</span></em>, <em class="sig-param"><span class="n">surface_ocean_ddic</span></em>, <em class="sig-param"><span class="n">dpco2_oc</span></em>, <em class="sig-param"><span class="n">pco2_oc</span></em>, <em class="sig-param"><span class="n">pco2_oc_pi</span></em>, <em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.flux_TV_CV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Actual air-sea flux (variable temperature, variable carbonate chemistry)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>yr_id</strong> (<cite>int</cite>) – Array index corresponding to the time value of the current timestep</p></li>
+<li><p><strong>datmos_co2</strong> (<cite>float</cite>) – Atmospheric perturbation pCO2 (ppm)</p></li>
+<li><p><strong>air_sea_gas_exchange_coeff</strong> (<cite>float</cite>) – Air-sea gas exchange coefficient (1/(m2 year))</p></li>
+<li><p><strong>surface_ocean_ddic</strong> (<cite>float</cite>) – Anthropogenic carbon in the surface ocean (umol/kg)</p></li>
+<li><p><strong>dpco2_oc</strong> (<cite>numpy.array</cite>) – Ocean perturbation pCO2 (ppm)</p></li>
+<li><p><strong>pco2_oc</strong> (<cite>numpy.array</cite>) – Ocean pCO2 (ppm)</p></li>
+<li><p><strong>pco2_oc_pi</strong> (<cite>int</cite> or <cite>float</cite>) – Preindustrial ocean pCO2 (ppm)</p></li>
+<li><p><strong>atmos_co2</strong> (<cite>numpy.array</cite>) – Atmopsheric pCO2 (ppm)</p></li>
+<li><p><strong>DT</strong> (<cite>numpy.array</cite> or <cite>xarray.DataArray</cite>) – Warming since preindustrail (degrees celsius)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>air-sea flux in units of (ppm)/(m2 year)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.ocean_flux">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">ocean_flux</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span><span class="o">=</span><span class="default_value">109</span></em>, <em class="sig-param"><span class="n">HILDA</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">DT</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">temperature</span><span class="o">=</span><span class="default_value">'constant'</span></em>, <em class="sig-param"><span class="n">chemistry</span><span class="o">=</span><span class="default_value">'variable'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.ocean_flux" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate ocean carbon uptake as in Joos et al. 1996</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>atmos_co2</strong> (<cite>xarray.DataArray</cite>) – Atmopsheric pCO2 (ppm)</p></li>
+<li><p><strong>OceanMLDepth</strong> (<cite>int</cite> or <cite>float</cite>) – Ocean mixed layer depth, used as a tuning parameter.</p></li>
+<li><p><strong>HILDA</strong> (<em>bool</em>) – When set to True, use the HILDA response function. When False, use Sarmiento et al. 1992 response.
+Default value is True</p></li>
+<li><p><strong>DT</strong> (<cite>numpy.array</cite> or <cite>xarray.DataArray</cite>) – Warming since preindustrail (degrees celsius)</p></li>
+<li><p><strong>temperature</strong> (<em>str</em>) – ‘variable’ or ‘constant’, determines whether surface ocean experiences temperature increase</p></li>
+<li><p><strong>chemistry</strong> (<em>str</em>) – ‘variable’ or ‘constant’, determines whether carbonate chemistry is linear or variable</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>ds</strong> – This Dataset contains time (year), ocean flux ((Pg C)/year), surface ocean anthropogenic
+carbon (umol/kg), surface ocean perturbation pCO2 (ppm)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>xarray.Dataset</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.plot_scen_cum">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">plot_scen_cum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span><span class="o">=</span><span class="default_value">110</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.plot_scen_cum" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.plot_scen_cum_b">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">plot_scen_cum_b</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span><span class="o">=</span><span class="default_value">110</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.plot_scen_cum_b" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.plot_scen_ddic">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">plot_scen_ddic</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span><span class="o">=</span><span class="default_value">110</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.plot_scen_ddic" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="qoccm.plot_scen_flux">
+<code class="sig-prename descclassname">qoccm.</code><code class="sig-name descname">plot_scen_flux</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">atmos_co2</span></em>, <em class="sig-param"><span class="n">DT</span></em>, <em class="sig-param"><span class="n">OceanMLDepth</span><span class="o">=</span><span class="default_value">109</span></em><span class="sig-paren">)</span><a class="headerlink" href="#qoccm.plot_scen_flux" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">QOCCM</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methodology.html">Methodology</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">qoccm package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-qoccm">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="methodology.html" title="previous chapter">Methodology</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Sean Ridge.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/qoccm.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

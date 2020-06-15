@@ -1,0 +1,7 @@
+setup.py
+qoccm/__init__.py
+qoccm.egg-info/PKG-INFO
+qoccm.egg-info/SOURCES.txt
+qoccm.egg-info/dependency_links.txt
+qoccm.egg-info/not-zip-safe
+qoccm.egg-info/top_level.txt
