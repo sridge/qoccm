@@ -393,10 +393,16 @@ def ocean_flux(atmos_co2,
                 coords={'year':atmos_co2.year}) 
 
     # annually average/sum output
-    ds['year'] = ds.year.astype(int)
-    ds['F_as'] = ds.F_as.groupby('year').sum(dim='year')
-    ds['dDIC'] = ds.dDIC.groupby('year').mean(dim='year')
-    ds['dpCO2'] = ds.dpCO2.groupby('year').mean(dim='year')
+    year_bins = np.unique(atmos_co2.year.astype(int))
+
+    ds['F_as'] = ds.F_as.groupby_bins(atmos_co2.year, bins=year_bins, right=False).sum(dim='year')
+    ds['dDIC'] = ds.dDIC.groupby_bins(atmos_co2.year, bins=year_bins, right=False).mean(dim='year')
+    ds['dpCO2'] = ds.dpCO2.groupby_bins(atmos_co2.year, bins=year_bins, right=False).mean(dim='year')
+    
+    ds = ds.drop('year')
+    ds = ds.rename({'year_bins':'year'})
+    ds['year'] = year_bins
+
 
     return ds
 
@@ -444,6 +450,7 @@ def plot_experiments(atmos_co2, DT, OceanMLDepth=109):
     flux = ds.F_as
     plt.plot(atmos_co2.year,flux,label='Control',color='k')
 
+    plt.ylabel('Pg C yr$^{-1}')
     plt.grid()
     plt.xlim(1850.5,2080)
     plt.legend()

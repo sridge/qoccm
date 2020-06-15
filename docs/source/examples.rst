@@ -25,7 +25,7 @@ The first step is to specify the model timestep and ocean mixed layer depth. For
 
 	year_i = 1850.5
 	year_f = 2080.5
-	nsteps = 2300
+	nsteps = 2301
 
 	time_step = (year_f-year_i)/nsteps
 
