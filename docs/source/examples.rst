@@ -94,5 +94,9 @@ Run model and plot the results:
 	plt.xlim(1850.5,2080)
 	plt.legend()
 
+.. image:: output.png
+  :width: 400
+  :alt: idealized experiments
+
 .. Interactive Example: Emulate CMIP6
 .. ----------------------------------
