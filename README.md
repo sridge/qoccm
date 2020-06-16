@@ -4,7 +4,7 @@ Quick Ocean Carbon Cycle Model
 # Installation
 
 ```
-git clone
+git clone https://github.com/sridge/qoccm.git
 cd qoccm
 python setup.py install
 ```
