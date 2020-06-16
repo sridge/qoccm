@@ -97,6 +97,6 @@ Run model and plot the results:
 
 Output:
 
-.. image:: output.png
+.. image:: out_example.png
 	:width: 400
 	:alt: idealized experiments
