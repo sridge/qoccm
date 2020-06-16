@@ -61,7 +61,7 @@ Run model and plot the results:
 	                      temperature='constant', chemistry='constant',
 	                     )
 	flux = ds.F_as
-	plt.plot(flux.year,flux,label = 'Constant Temperature and Constant Buffer Factor')
+	plt.plot(flux.year,flux,label = 'Constant Temperature and Constant Buffer Capacity')
 
 	# linear buffering
 	ds = qoccm.ocean_flux(atmos_co2,
@@ -93,6 +93,8 @@ Run model and plot the results:
 	plt.grid()
 	plt.xlim(1850.5,2080)
 	plt.legend()
+
+Output:
 
 .. image:: output.png
   :width: 400
