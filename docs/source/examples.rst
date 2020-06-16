@@ -99,6 +99,3 @@ Output:
 .. image:: output.png
   :width: 400
   :alt: idealized experiments
-
-.. Interactive Example: Emulate CMIP6
-.. ----------------------------------
