@@ -61,7 +61,7 @@ Run model and plot the results:
 	                      temperature='constant', chemistry='constant',
 	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature and PI Buffer Factor')
+	plt.plot(flux.year,flux,label = 'Constant Temperature and Constant Buffer Factor')
 
 	# linear buffering
 	ds = qoccm.ocean_flux(atmos_co2,
@@ -70,7 +70,7 @@ Run model and plot the results:
 	                      temperature='variable', chemistry='constant',
 	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label='Constant PI Buffer Capacity')
+	plt.plot(flux.year,flux,label='Constant Buffer Capacity')
 
 	# constant solubility
 	ds = qoccm.ocean_flux(atmos_co2,
@@ -79,7 +79,7 @@ Run model and plot the results:
 	                      temperature='constant', chemistry='variable',
 	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature',color='tab:green')
+	plt.plot(flux.year,flux,label = 'Constant Temperature',color='tab:green')
 
 	# control
 	ds = qoccm.ocean_flux(atmos_co2,
@@ -88,12 +88,11 @@ Run model and plot the results:
 	                      temperature='variable', chemistry='variable',
 	                     )
 	flux = ds.F_as
-	plt.plot(atmos_co2.year,flux,label='Control',color='k')
-	plt.ylavel('Pg C yr$^{-1}')
+	plt.plot(flux.year,flux,label='Control',color='k')
+	plt.ylabel('Pg C yr$^{-1}$')
 	plt.grid()
 	plt.xlim(1850.5,2080)
 	plt.legend()
-
 
 .. Interactive Example: Emulate CMIP6
 .. ----------------------------------
