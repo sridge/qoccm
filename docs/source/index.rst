@@ -9,14 +9,6 @@ The QOCCM package includes code for running idealized experiments such as ocean 
 Installation
 ------------
 
-Install QOCCM by running:
-
-.. code-block:: bash
-
-    pip install qoccm
-
-If you want to be able to run the :doc:`examples`, install from GitHub
-
 .. code-block:: bash
 
 	git clone https://github.com/sridge/qoccm.git
