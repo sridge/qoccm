@@ -93,9 +93,3 @@ Run model and plot the results:
 	plt.grid()
 	plt.xlim(1850.5,2080)
 	plt.legend()
-
-Output:
-
-.. image:: output.png
-	:width: 400
-	:alt: idealized experiments
