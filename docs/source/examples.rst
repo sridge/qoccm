@@ -50,6 +50,7 @@ In this next step, we interpolate the forcings to the points in time for the giv
 Run model and plot the results:
 
 .. code-block:: python
+
 	import matplotlib.pyplot as plt
 
 	plt.figure(dpi=300)
@@ -97,8 +98,8 @@ Run model and plot the results:
 Output:
 
 .. image:: output.png
-  :width: 400
-  :alt: idealized experiments
+	:width: 400
+	:alt: idealized experiments
 
 .. Interactive Example: Emulate CMIP6
 .. ----------------------------------
