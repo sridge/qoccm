@@ -47,9 +47,10 @@ In this next step, we interpolate the forcings to the points in time for the giv
 	atmos_co2 = atmos_co2.interp(year=np.linspace(year_i,year_f,nsteps))
 	DT = DT.interp(year=np.linspace(year_i,year_f,nsteps))
 
-Plot the results:
+Run model and plot the results:
 
 .. code-block:: python
+	import matplotlib.pyplot as plt
 
 	plt.figure(dpi=300)
 
@@ -88,7 +89,7 @@ Plot the results:
 	                     )
 	flux = ds.F_as
 	plt.plot(atmos_co2.year,flux,label='Control',color='k')
-
+	plt.ylavel('Pg C yr$^{-1}')
 	plt.grid()
 	plt.xlim(1850.5,2080)
 	plt.legend()

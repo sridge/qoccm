@@ -401,7 +401,7 @@ def ocean_flux(atmos_co2,
     
     ds = ds.drop('year')
     ds = ds.rename({'year_bins':'year'})
-    ds['year'] = year_bins
+    ds['year'] = year_bins[0:-1]
 
 
     return ds
