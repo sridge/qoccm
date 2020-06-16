@@ -13,7 +13,7 @@ Installation
 
 	git clone https://github.com/sridge/qoccm.git
 	cd qoccm
-	python setup.py install qoccm
+	python setup.py install
 
 Contents
 --------
