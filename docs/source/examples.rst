@@ -50,46 +50,53 @@ In this next step, we interpolate the forcings to the points in time for the giv
 Run model and plot the results:
 
 .. code-block:: python
+
 	import matplotlib.pyplot as plt
 
 	plt.figure(dpi=300)
 
 	# linear buffering and constant solubility
 	ds = qoccm.ocean_flux(atmos_co2,
-			      OceanMLDepth=OceanMLDepth, HILDA=True,
-			      DT=None,
-			      temperature='constant', chemistry='constant',
-			     )
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=None,
+	                      temperature='constant', chemistry='constant',
+	                     )
 	flux = ds.F_as
 	plt.plot(flux.year,flux,label = 'Constant Temperature and Constant Buffer Capacity')
 
 	# linear buffering
 	ds = qoccm.ocean_flux(atmos_co2,
-			      OceanMLDepth=OceanMLDepth, HILDA=True,
-			      DT=DT,
-			      temperature='variable', chemistry='constant',
-			     )
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=DT,
+	                      temperature='variable', chemistry='constant',
+	                     )
 	flux = ds.F_as
 	plt.plot(flux.year,flux,label='Constant Buffer Capacity')
 
 	# constant solubility
 	ds = qoccm.ocean_flux(atmos_co2,
-			      OceanMLDepth=OceanMLDepth, HILDA=True,
-			      DT=None,
-			      temperature='constant', chemistry='variable',
-			     )
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=None,
+	                      temperature='constant', chemistry='variable',
+	                     )
 	flux = ds.F_as
 	plt.plot(flux.year,flux,label = 'Constant Temperature',color='tab:green')
 
 	# control
 	ds = qoccm.ocean_flux(atmos_co2,
-			      OceanMLDepth=OceanMLDepth, HILDA=True,
-			      DT=DT,
-			      temperature='variable', chemistry='variable',
-			     )
+	                      OceanMLDepth=OceanMLDepth, HILDA=True,
+	                      DT=DT,
+	                      temperature='variable', chemistry='variable',
+	                     )
 	flux = ds.F_as
 	plt.plot(flux.year,flux,label='Control',color='k')
 	plt.ylabel('Pg C yr$^{-1}$')
 	plt.grid()
 	plt.xlim(1850.5,2080)
 	plt.legend()
+
+Output:
+
+.. image:: output.png
+	:width: 400
+	:alt: idealized experiments
