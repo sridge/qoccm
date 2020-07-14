@@ -4,7 +4,7 @@ Methodology
 Model Dynamics
 --------------
 
-QOCCM is in the same class of models that generate the CO2 concentration scenarios that are used to force the Earth System Models of CMIP6. For a detailed description of the model see Ridge and McKinley (2020). The model consists of two equations that are solved at each timestep:
+QOCCM is based on the model of Joos et al. (1996). QOCCM is in the same class of models that generate the CO2 concentration scenarios that are used to force the Earth System Models of CMIP6. For a detailed description of the model see Ridge and McKinley (2020) and Joos et al. (1996). The model consists of two equations that are solved at each timestep:
 
 .. math::
 	
