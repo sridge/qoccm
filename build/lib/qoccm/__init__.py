@@ -33,6 +33,8 @@ def HILDA_response(years, OceanMLDepth):
     ocean_area = 3.62E14  # ocean area in square meters
     g_cper_mole = 12.0113  # molar mass of carbon.
     sea_water_dens = 1.0265E3  # sea water density in kg/m^3.
+    # c = 1.722E17 umol m^3 kg^-1 ppm^-1; Joos et al. 1996 pg. 402
+    c = (1E21 * PgCperppm / g_cper_mole) / (sea_water_dens) 
 
     years = years-np.min(years)
     return_val = np.zeros(len(years))
@@ -45,8 +47,9 @@ def HILDA_response(years, OceanMLDepth):
             value = 0.022936 + 0.24278 * np.exp(-yr / 1.2679) + 0.13963 * np.exp(-yr / 5.2528) + 0.089318 * np.exp(
                 -yr / 18.601) + 0.037820 * np.exp(-yr / 68.736) + 0.035549 * np.exp(-yr / 232.30)
 
-        # scale values to micromole per kg
-        return_val[yr_ind] = value * (1E21 * PgCperppm / g_cper_mole) / (sea_water_dens * OceanMLDepth * ocean_area)
+        # scale values to umol kg^-1 ppm^-1
+        return_val[yr_ind] = value * c / (OceanMLDepth * ocean_area)
+
 
     return return_val
 
@@ -72,11 +75,13 @@ def Sarmiento92_response(years, OceanMLDepth):
     ocean_area = 3.62E14  # ocean area in square meters
     g_cper_mole = 12.0113  # molar mass of carbon.
     sea_water_dens = 1.0265E3  # sea water density in kg/m^3.
+    # c = 1.722E17 umol m^3 kg^-1 ppm^-1; Joos et al. 1996 pg. 402
+    c = (1E21 * PgCperppm / g_cper_mole) / (sea_water_dens) 
 
     years = years-np.min(years)
     return_val = np.zeros(len(years))
-
-    for yr in years:
+    
+    for yr_ind,yr in enumerate(years):
         if yr <= 1.0:
             value = 1
         else:
@@ -88,8 +93,8 @@ def Sarmiento92_response(years, OceanMLDepth):
             
         
 
-        # scale air-sea flux values to micromole per kg
-        return_val[yr] = value * (1E21 * PgCperppm / g_cper_mole) / (sea_water_dens * OceanMLDepth * ocean_area)
+        # scale values to umol kg^-1 ppm^-1
+        return_val[yr_ind] = value * c / (OceanMLDepth * ocean_area)
 
     return return_val
 
@@ -178,7 +183,7 @@ def flux_TC_CV(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     Returns
     -------
     `float`
-        air-sea flux in units of (ppm)/(m2 year) 
+        air-sea flux in units of ppm/timestep
     """
 
     if yr_ind > 0:
@@ -218,7 +223,7 @@ def flux_TV_CC(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     Returns
     -------
     `float`
-        air-sea flux in units of (ppm)/(m2 year) 
+        air-sea flux in units of ppm/timestep
     """
 
     dpco2_oc[yr_ind] = delta_pco2_ocean_lin(surface_ocean_ddic[yr_ind])
@@ -250,7 +255,7 @@ def flux_TC_CC(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     Returns
     -------
     `float`
-        air-sea flux in units of (ppm)/(m2 year) 
+        air-sea flux in units of ppm/timestep 
     """
 
     if yr_ind > 0:
@@ -290,7 +295,7 @@ def flux_TV_CV(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     Returns
     -------
     `float`
-        air-sea flux in units of (ppm)/(m2 year) 
+        air-sea flux in units of ppm/timestep
     """
 
     dpco2_oc[yr_ind] = delta_pco2_ocean(surface_ocean_ddic[yr_ind])
@@ -328,7 +333,7 @@ def ocean_flux(atmos_co2,
     Returns
     -------
     ds: `xarray.Dataset`
-        This Dataset contains time (year), ocean flux ((Pg C)/year), surface ocean anthropogenic
+        This Dataset contains time (year), ocean flux ((Pg C)/yr), surface ocean anthropogenic
         carbon (umol/kg), surface ocean perturbation pCO2 (ppm)
     """
     
@@ -337,7 +342,9 @@ def ocean_flux(atmos_co2,
     if chemistry not in ['constant','variable']:
         raise ValueError('chemistry flag must be either \'contstant\' or \'variable\'')
 
-    air_sea_gas_exchange_coeff = 0.1042  # kg m^-2 year^-1
+#     air_sea_gas_exchange_coeff = 0.1042  # kg m^-2 year^-1
+    ocean_area = 3.62E14
+    air_sea_gas_exchange_coeff = 1/9.06 # m^-2 year^-1
     surface_ocean_ddic = np.zeros(len(atmos_co2))
     dpco2_oc = np.zeros(len(atmos_co2))
     pco2_oc = np.zeros(len(atmos_co2))
@@ -385,12 +392,24 @@ def ocean_flux(atmos_co2,
             
     if (temperature == 'variable'):
         dpco2_oc = pco2_oc - pco2_oc_pi
-    
-    ds = xr.Dataset(data_vars={'F_as':('year',air_sea_flux),
+        
+    ds = xr.Dataset(data_vars={'F_as':('year',(air_sea_flux*PgCperppm)),
                                'dDIC':('year',surface_ocean_ddic),
                                'dpCO2':('year',dpco2_oc)
                                },
-                coords={'year':atmos_co2.year})  
+                coords={'year':atmos_co2.year}) 
+
+    # annually average/sum output
+    year_bins = np.unique(atmos_co2.year.astype(int))
+
+    ds['F_as'] = ds.F_as.groupby_bins(atmos_co2.year, bins=year_bins, right=False).sum(dim='year')
+    ds['dDIC'] = ds.dDIC.groupby_bins(atmos_co2.year, bins=year_bins, right=False).mean(dim='year')
+    ds['dpCO2'] = ds.dpCO2.groupby_bins(atmos_co2.year, bins=year_bins, right=False).mean(dim='year')
+    
+    ds = ds.drop('year')
+    ds = ds.rename({'year_bins':'year'})
+    ds['year'] = year_bins[0:-1]
+
 
     return ds
 
@@ -403,44 +422,46 @@ def plot_experiments(atmos_co2, DT, OceanMLDepth=109):
     plt.figure(dpi=300)
 
     # linear buffering and constant solubility
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=None,
-                    temperature='constant', chemistry='constant',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=None,
+                          temperature='constant', chemistry='constant',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,linestyle='--',label = 'Fixed Temperature and PI Buffer Factor')
+    plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature and PI Buffer Factor')
 
     # linear buffering
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=DT,
-                    temperature='variable', chemistry='constant',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=DT,
+                          temperature='variable', chemistry='constant',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label='Only Warming')
+    plt.plot(atmos_co2.year,flux,label='Constant PI Buffer Capacity')
 
     # constant solubility
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=None,
-                    temperature='constant', chemistry='variable',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=None,
+                          temperature='constant', chemistry='variable',
+                         )
     flux = ds.F_as
-    plt.plot(atmos_co2.year,flux,label = 'Only PI Buffer Factor',color='tab:green')
+    plt.plot(atmos_co2.year,flux,label = 'Fixed Temperature',color='tab:green')
 
     # control
-    ds = ocean_flux(atmos_co2,
-                    OceanMLDepth=OceanMLDepth, HILDA=True,
-                    DT=DT,
-                    temperature='variable', chemistry='variable',
-                   )
+    ds = qoccm.ocean_flux(atmos_co2,
+                          OceanMLDepth=OceanMLDepth, HILDA=True,
+                          DT=DT,
+                          temperature='variable', chemistry='variable',
+                         )
     flux = ds.F_as
     plt.plot(atmos_co2.year,flux,label='Control',color='k')
 
+    plt.ylabel('Pg C yr$^{-1}')
+    plt.grid()
+    plt.xlim(1850.5,2080)
     plt.legend()
-    
-    plt.legend()
+
     ax = plt.gca()
     
     return(ax)
