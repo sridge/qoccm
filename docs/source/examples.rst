@@ -8,11 +8,11 @@ Included with the `QOCCM GitHub repository <https://github.com/sridge/qoccm>`_ a
 Simple Example: Idealized Experiments
 -------------------------------------
 
-In this example we will show you how to generate idealized experiments. This example is forced with atmospheric CO2 consistent with an unmitigated climate change scenario (RCP8.5). By selecting a mixed layer depth of 109 meters, QOCCM in this example will match the carbon uptake of the Community Earth Sysetm Model (CESM) ocean component model.
+In this example we will show you how to generate idealized experiments. This example is forced with atmospheric CO2 consistent with an unmitigated climate change scenario (RCP8.5). By selecting a mixed layer depth of 51 meters, QOCCM in this example will match the carbon uptake of the Community Earth Sysetm Model (CESM) ocean component model.
 
 Start in the :code:`qoccm` directory you cloned from GitHub or copy the files :code:`ATM_CO2.nc` and :code:`GMSSTA.nc` from the :code:`qoccm` directory to you working directory.
 
-The first step is to specify the model timestep and ocean mixed layer depth. For the highest accuracy, we recommend a timestep of 0.1 years or less:
+The first step is to specify the model timestep and ocean mixed layer depth. Smaller timesteps (<0.5 years) combined with shallow mixed layer depths (<90m) currently cause numerical instability.
 
 .. code-block:: python
 
@@ -21,11 +21,11 @@ The first step is to specify the model timestep and ocean mixed layer depth. For
 	import numpy as np
 	
 
-	OceanMLDepth = 109 # this gives the best fit to the CESM
+	OceanMLDepth = 51 # this gives the best fit to the CESM
 
 	year_i = 1850.5
 	year_f = 2080.5
-	nsteps = 2301
+	nsteps = 230
 
 	time_step = (year_f-year_i)/nsteps
 
