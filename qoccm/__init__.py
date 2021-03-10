@@ -174,7 +174,7 @@ def flux_TC_CV(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     datmos_co2 : `float`
         Atmospheric perturbation pCO2 (ppm)
     air_sea_gas_exchange_coeff: `float`
-        Air-sea gas exchange coefficient (1/(m2 year))
+        Air-sea gas exchange coefficient (1/year)
     surface_ocean_ddic : `float`
         Anthropogenic carbon in the surface ocean (umol/kg)   
     dpco2_oc: `numpy.array`
@@ -206,7 +206,7 @@ def flux_TV_CC(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     datmos_co2 : `float`
         Atmospheric perturbation pCO2 (ppm)
     air_sea_gas_exchange_coeff: `float`
-        Air-sea gas exchange coefficient (1/(m2 year))
+        Air-sea gas exchange coefficient (1/year)
     surface_ocean_ddic : `float`
         Anthropogenic carbon in the surface ocean (umol/kg)   
     dpco2_oc : `numpy.array`
@@ -246,7 +246,7 @@ def flux_TC_CC(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     datmos_co2 : `float`
         Atmospheric perturbation pCO2 (ppm)
     air_sea_gas_exchange_coeff: `float`
-        Air-sea gas exchange coefficient (1/(m2 year))
+        Air-sea gas exchange coefficient (1/year)
     surface_ocean_ddic : `float`
         Anthropogenic carbon in the surface ocean (umol/kg)   
     dpco2_oc : `numpy.array`
@@ -278,7 +278,7 @@ def flux_TV_CV(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
     datmos_co2 : `float`
         Atmospheric perturbation pCO2 (ppm)
     air_sea_gas_exchange_coeff: `float`
-        Air-sea gas exchange coefficient (1/(m2 year))
+        Air-sea gas exchange coefficient (1/year)
     surface_ocean_ddic : `float`
         Anthropogenic carbon in the surface ocean (umol/kg)   
     dpco2_oc : `numpy.array`
@@ -307,7 +307,7 @@ def flux_TV_CV(yr_ind,datmos_co2,air_sea_gas_exchange_coeff,
 #--------------------------
 
 def ocean_flux(atmos_co2,
-                   OceanMLDepth=109, HILDA=True,
+                   OceanMLDepth=51, HILDA=True,
                    DT=None,
                    temperature='constant', chemistry='variable',
                   ):   
@@ -344,7 +344,7 @@ def ocean_flux(atmos_co2,
 
 #     air_sea_gas_exchange_coeff = 0.1042  # kg m^-2 year^-1
     ocean_area = 3.62E14
-    air_sea_gas_exchange_coeff = 1/9.06 # m^-2 year^-1
+    air_sea_gas_exchange_coeff = 1/9.06 # year^-1
     surface_ocean_ddic = np.zeros(len(atmos_co2))
     dpco2_oc = np.zeros(len(atmos_co2))
     pco2_oc = np.zeros(len(atmos_co2))
@@ -413,7 +413,7 @@ def ocean_flux(atmos_co2,
 
     return ds
 
-def plot_experiments(atmos_co2, DT, OceanMLDepth=109):
+def plot_experiments(atmos_co2, DT, OceanMLDepth=51):
 
     """
     Run multiple experiments and plot the results. Same as the example on readthedocs
