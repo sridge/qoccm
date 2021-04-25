@@ -1,6 +1,5 @@
-# qoccm
+# qoccm [![DOI](https://zenodo.org/badge/271140578.svg)](https://zenodo.org/badge/latestdoi/271140578)
 Quick Ocean Carbon Cycle Model
-[![DOI](https://zenodo.org/badge/271140578.svg)](https://zenodo.org/badge/latestdoi/271140578)
 
 
 # Installation
